@@ -1,6 +1,35 @@
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# Virtual Environment
 venv/
+.env
+
+# SQLite
 *.db
+
+# Logs
+logs/
+*.log
+
+# Packet Captures
 captures/*.pcap
-logs/*.log
+captures/*.pcapng
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python cache
+.pytest_cache/
+
+# Environment
+.env
