@@ -5,7 +5,6 @@ from statistics import TrafficStatistics
 from host_tracker import HostTracker
 
 
-# Create objects
 tracker = PortTracker()
 stats = TrafficStatistics()
 host_tracker = HostTracker()
@@ -15,50 +14,45 @@ class ThreatDetector:
 
     def detect(self, packet):
 
-        # Ignore packets without an IPv4 layer
+        # Ignore non-IPv4 packets
         if not packet.haslayer(IP):
             return
 
         ip = packet[IP]
 
-        # -------------------------------
-        # TCP PACKETS
-        # -------------------------------
+        # -------------------------
+        # TCP
+        # -------------------------
         if packet.haslayer(TCP):
 
             tcp = packet[TCP]
 
-            # Update statistics
             stats.add("TCP")
 
-            # Update host information
             host_tracker.add(
                 ip.src,
                 ip.dst,
                 tcp.dport
             )
 
-            # Track unique destination ports
             tracker.add(
                 ip.src,
                 tcp.dport
             )
-            
 
-            # Port Scan Detection
             if tracker.count(ip.src) > 10:
 
                 print("\n" + "=" * 60)
                 print("🚨 POSSIBLE PORT SCAN DETECTED")
                 print("=" * 60)
-                print(f"Source IP        : {ip.src}")
-                print(f"Destination IP   : {ip.dst}")
-                print(f"Unique Ports     : {tracker.count(ip.src)}")
+                print(f"Source IP       : {ip.src}")
+                print(f"Destination IP  : {ip.dst}")
+                print(f"Unique Ports    : {tracker.count(ip.src)}")
                 print("=" * 60)
 
-        # -------------------------------
-        # UDP PACKETS
-        # -------------------------------
+        # -------------------------
+        # UDP
+        # -------------------------
         elif packet.haslayer(UDP):
 
             udp = packet[UDP]
@@ -71,25 +65,22 @@ class ThreatDetector:
                 udp.dport
             )
 
-        # -------------------------------
-        # ICMP PACKETS
-        # -------------------------------
+        # -------------------------
+        # ICMP
+        # -------------------------
         elif packet.haslayer(ICMP):
 
             stats.add("ICMP")
 
-            # ICMP has no destination port
             host_tracker.add(
                 ip.src,
                 ip.dst,
                 0
             )
 
-        # -------------------------------
-        # OTHER IP PROTOCOLS
-        # -------------------------------
+        # -------------------------
+        # Other IP protocols
+        # -------------------------
         else:
 
             stats.add("OTHER")
-
-    

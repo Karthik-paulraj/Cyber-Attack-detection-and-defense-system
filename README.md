@@ -1,2 +1,45 @@
-# Cyber-Attack-detection-and-defense-system
-Cyber Attack Detection and Defense System is a defensive cybersecurity project focused on identifying and mitigating common network-based threats. Using tools such as Wireshark and Snort, the project analyzes network traffic, detects suspicious activities, and enhances overall system security through proactive threat monitoring.
+# Cyber Attack Detection and Defense System
+
+A Python-based cybersecurity project for analyzing captured network traffic and detecting suspicious activity.
+
+## Features
+
+- Reads PCAP files using Scapy
+- Detects TCP, UDP and ICMP traffic
+- Generates traffic statistics
+- Tracks source and destination hosts
+- Tracks destination ports
+- Detects possible port scanning attacks
+
+## Technologies
+
+- Python
+- Scapy
+- Wireshark
+- Git
+
+## Project Structure
+
+```
+Packet Capture (.pcap)
+        │
+        ▼
+Packet Reader
+        │
+        ▼
+Threat Detector
+        │
+ ┌──────┼─────────┐
+ ▼      ▼         ▼
+Statistics HostTracker PortTracker
+```
+
+## Future Work
+
+- SQLite Database
+- Flask Dashboard
+- Snort Integration
+- SYN Flood Detection
+- ICMP Flood Detection
+- SSH Brute Force Detection
+- Automatic Firewall Blocking

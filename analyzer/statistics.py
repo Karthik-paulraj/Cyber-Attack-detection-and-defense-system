@@ -13,12 +13,12 @@ class TrafficStatistics:
 
     def show(self):
 
-        print("\n" + "=" * 50)
+        print("\n" + "=" * 60)
         print("TRAFFIC STATISTICS")
-        print("=" * 50)
+        print("=" * 60)
 
         for protocol, count in self.counter.items():
 
             print(f"{protocol:<10} : {count}")
 
-        print("=" * 50)
+        print("=" * 60)

@@ -12,8 +12,13 @@ class PortTracker:
         self.connections[source_ip].add(destination_port)
 
     def count(self, source_ip):
+
         return len(self.connections[source_ip])
 
     def show(self):
-        print(self.connections)
 
+        print("\nPORT TRACKER")
+
+        for ip, ports in self.connections.items():
+
+            print(f"{ip} -> {sorted(list(ports))}")

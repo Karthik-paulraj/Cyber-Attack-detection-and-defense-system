@@ -22,11 +22,11 @@ class HostTracker:
         print("=" * 60)
 
         print("\nTop Source IPs")
-	
+
         for ip, count in self.source_counter.most_common(5):
 
             print(f"{ip:<20} {count}")
-            
+
         print("\nTop Destination IPs")
 
         for ip, count in self.destination_counter.most_common(5):
@@ -38,3 +38,5 @@ class HostTracker:
         for port, count in self.port_counter.most_common(10):
 
             print(f"{port:<10} {count}")
+
+        print("=" * 60)
