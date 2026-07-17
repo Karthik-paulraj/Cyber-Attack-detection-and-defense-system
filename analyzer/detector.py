@@ -1,86 +1,47 @@
-from scapy.layers.inet import IP, TCP, UDP, ICMP
-
-from models import PortTracker
-from statistics import TrafficStatistics
-from host_tracker import HostTracker
-
-
-tracker = PortTracker()
-stats = TrafficStatistics()
-host_tracker = HostTracker()
-
+from attacks.port_scan import PortScanDetector
+from attacks.syn_flood import SynFloodDetector
+from attacks.icmp_flood import ICMPFloodDetector
+from attacks.udp_flood import UDPFloodDetector
+from attacks.ssh_bruteforce import SSHBruteForceDetector
 
 class ThreatDetector:
+    def __init__(self):
+        self.port_scan_detector = PortScanDetector()
+        self.syn_flood_detector = SynFloodDetector()
+        self.icmp_flood_detector = ICMPFloodDetector()
+        self.udp_flood_detector = UDPFloodDetector()
+        self.ssh_bruteforce_detector = SSHBruteForceDetector()
 
-    def detect(self, packet):
+    def process_packet(self, packet):
+        alerts = []
 
-        # Ignore non-IPv4 packets
-        if not packet.haslayer(IP):
-            return
+        if packet.haslayer("TCP") and packet["TCP"].flags == "S":
+            source_ip = packet[0][1].src
+            destination_ip = packet[0][1].dst
+            destination_port = packet["TCP"].dport
 
-        ip = packet[IP]
+            if self.port_scan_detector.detect(source_ip, destination_ip, destination_port):
+                alerts.append(("PORT_SCAN", source_ip))
 
-        # -------------------------
-        # TCP
-        # -------------------------
-        if packet.haslayer(TCP):
+        elif packet.haslayer("UDP"):
+            source_ip = packet[0][1].src
+            destination_ip = packet[0][1].dst
+            destination_port = packet["UDP"].dport
+            source_port = packet["UDP"].sport
 
-            tcp = packet[TCP]
+            if self.port_scan_detector.detect(source_ip, destination_ip, destination_port, source_port):
+                alerts.append(("PORT_SCAN", source_ip))
 
-            stats.add("TCP")
+        if self.syn_flood_detector.detect(packet):
+            alerts.append(("SYN_FLOOD", packet[0][1].src))
 
-            host_tracker.add(
-                ip.src,
-                ip.dst,
-                tcp.dport
-            )
+        if self.icmp_flood_detector.detect(packet):
+            alerts.append(("ICMP_FLOOD", packet[0][1].src))
 
-            tracker.add(
-                ip.src,
-                tcp.dport
-            )
+        if self.udp_flood_detector.detect(packet):
+            alerts.append(("UDP_FLOOD", packet[0][1].src))
 
-            if tracker.count(ip.src) > 10:
+        if self.ssh_bruteforce_detector.detect(packet):
+            alerts.append(("SSH_BRUTEFORCE", packet[0][1].src))
 
-                print("\n" + "=" * 60)
-                print("🚨 POSSIBLE PORT SCAN DETECTED")
-                print("=" * 60)
-                print(f"Source IP       : {ip.src}")
-                print(f"Destination IP  : {ip.dst}")
-                print(f"Unique Ports    : {tracker.count(ip.src)}")
-                print("=" * 60)
-
-        # -------------------------
-        # UDP
-        # -------------------------
-        elif packet.haslayer(UDP):
-
-            udp = packet[UDP]
-
-            stats.add("UDP")
-
-            host_tracker.add(
-                ip.src,
-                ip.dst,
-                udp.dport
-            )
-
-        # -------------------------
-        # ICMP
-        # -------------------------
-        elif packet.haslayer(ICMP):
-
-            stats.add("ICMP")
-
-            host_tracker.add(
-                ip.src,
-                ip.dst,
-                0
-            )
-
-        # -------------------------
-        # Other IP protocols
-        # -------------------------
-        else:
-
-            stats.add("OTHER")
+        return alerts
