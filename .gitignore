@@ -1,35 +1,37 @@
-# Python
+# --- Python ---
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
+.Python
 *.egg-info/
-
-# Virtual Environment
+.eggs/
 venv/
-.env
+env/
+.venv/
 
-# SQLite
-*.db
+# --- Hydra session/restore files (caused a real push rejection - 147MB file) ---
+*.restore
 
-# Logs
-logs/
-*.log
-
-# Packet Captures
+# --- Packet captures (can get large, and are throwaway test data) ---
+*.pcap
+*.pcapng
 captures/*.pcap
-captures/*.pcapng
 
-# IDE
-.vscode/
-.idea/
+# --- Firewall runtime state (machine-specific, shouldn't be shared/committed) ---
+firewall/whitelist.json
+firewall/blacklist.json
+firewall/pending_review.json
 
-# OS
+# --- OS/editor clutter ---
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+*.swp
 
-# Python cache
-.pytest_cache/
-
-# Environment
+# --- Environment/secrets, if ever added later ---
 .env
+
+# --- Logs ---
+*.log
